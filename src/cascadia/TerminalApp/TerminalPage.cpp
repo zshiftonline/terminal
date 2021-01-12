@@ -423,6 +423,60 @@ namespace winrt::TerminalApp::implementation
         ShellExecute(nullptr, nullptr, currentPath.c_str(), nullptr, nullptr, SW_SHOW);
     }
 
+    // Function Description
+    // - Presents a dialog, but allows the user to dismiss it forever.
+    //   When the user checks the "remember this setting" option (indicated by the xaml control passed in via `checkbox`),
+    //   _DisplayGatedDialog will call the "record user dismissal" lambda to finalize the user's preference before
+    //   returning and completing its job as a dialog.
+    // Arguments:
+    // - presenter: the IDialogPresenter with which to present the gated dialog
+    // - dialog: the dialog to optionally display
+    // - checkbox: the "remember this decision" checkbox
+    // - shouldDisplayDismissCheckbox: a caller-provided override that controls the visibility of the checkbox
+    //   (this is used to hide the checkbox if the user has provided explicit assent that the dialog should be displayed)
+    // - userHasDismissed: if true, the dialog is not presented. This is the important bit.
+    // - recordUserDismissal: a lambda invoked if the user checks the checkbox
+    template<typename TLambdaSave>
+    static winrt::Windows::Foundation::IAsyncOperation<ContentDialogResult> _DisplayGatedDialog(
+        IDialogPresenter presenter,
+        WUX::Controls::ContentDialog dialog,
+        WUX::Controls::CheckBox checkbox,
+        bool shouldDisplayDismissCheckbox,
+        bool userHasDismissed,
+        TLambdaSave&& recordUserDismissal)
+    {
+        if (shouldDisplayDismissCheckbox && userHasDismissed)
+        {
+            // We only respect the "saved" value of the checkbox when it would have otherwise been displayed.
+            co_return ContentDialogResult::Primary;
+        }
+
+        if (presenter)
+        {
+            // Before we make any UI changes, bounce to the main queue.
+            co_await winrt::resume_foreground(dialog.Dispatcher());
+
+            if (checkbox)
+            {
+                checkbox.Visibility(shouldDisplayDismissCheckbox ? Visibility::Visible : Visibility::Collapsed);
+                checkbox.IsChecked(false); // if the user checked it and cancelled, reset it.
+            }
+
+            auto result{ co_await(presenter.ShowDialog(dialog)) };
+
+            if (result == ContentDialogResult::Primary && checkbox && checkbox.IsChecked())
+            {
+                co_await winrt::resume_background();
+                recordUserDismissal();
+            }
+
+            co_return result;
+        }
+
+        // Dialogs that could not be displayed are dismissed with a non-confirmatory return.
+        co_return ContentDialogResult::None;
+    }
+
     // Method Description:
     // - Displays a dialog for warnings found while closing the terminal app using
     //   key binding with multiple tabs opened. Display messages to warn user
@@ -432,11 +486,18 @@ namespace winrt::TerminalApp::implementation
     //   when this is called, nothing happens. See _ShowDialog for details
     winrt::Windows::Foundation::IAsyncOperation<ContentDialogResult> TerminalPage::_ShowCloseWarningDialog()
     {
-        if (auto presenter{ _dialogPresenter.get() })
-        {
-            co_return co_await presenter.ShowDialog(FindName(L"CloseAllDialog").try_as<WUX::Controls::ContentDialog>());
-        }
-        co_return ContentDialogResult::None;
+        FindName(L"CloseAllDialog"); // Load the dialog and all children so we can refer to them by getter
+        return _DisplayGatedDialog(
+            _dialogPresenter.get(),
+            CloseAllDialog().try_as<WUX::Controls::ContentDialog>(),
+            CloseAllDialogRememberCheckbox().try_as<WUX::Controls::CheckBox>(),
+            !_settings.GlobalSettings().HasConfirmCloseAllTabs(),
+            ApplicationState::GetForCurrentApp().CloseAllTabsWarningDismissed(),
+            []() {
+                auto state = ApplicationState::GetForCurrentApp();
+                state.CloseAllTabsWarningDismissed(true);
+                state.Commit();
+            });
     }
 
     // Method Description:

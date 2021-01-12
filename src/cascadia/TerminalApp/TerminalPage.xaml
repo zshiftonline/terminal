@@ -51,6 +51,9 @@ the MIT License. See LICENSE in the project root for license information. -->
             x:Name="CloseAllDialog"
             x:Uid="CloseAllDialog"
             DefaultButton="Primary">
+            <StackPanel Orientation="Vertical">
+                <CheckBox x:Uid="DoNotAskAgainCheckbox" x:Name="CloseAllDialogRememberCheckbox" />
+            </StackPanel>
         </ContentDialog>
 
         <ContentDialog

@@ -527,4 +527,7 @@
   <data name="NoticeWarning" xml:space="preserve">
     <value>Warning</value>
   </data>
+  <data name="DoNotAskAgainCheckbox.Content" xml:space="preserve">
+    <value>Do not ask again</value>
+  </data>
 </root>

@@ -795,12 +795,14 @@ namespace winrt::TerminalApp::implementation
     {
         // Get the containing folder.
         const std::filesystem::path settingsPath{ std::wstring_view{ CascadiaSettings::SettingsPath() } };
+        auto statePath{ settingsPath };
+        statePath.replace_filename(L"state.json");
         const auto folder = settingsPath.parent_path();
 
         _reader.create(folder.c_str(),
                        false,
                        wil::FolderChangeEvents::All,
-                       [this, settingsPath](wil::FolderChangeEvent event, PCWSTR fileModified) {
+                       [this, settingsPath, statePath](wil::FolderChangeEvent event, PCWSTR fileModified) {
                            // We want file modifications, AND when files are renamed to be
                            // settings.json. This second case will oftentimes happen with text
                            // editors, who will write a temp file, then rename it to be the
@@ -817,7 +819,7 @@ namespace winrt::TerminalApp::implementation
                            const auto settingsBasename = settingsPath.filename();
                            const auto modifiedBasename = modifiedFilePath.filename();
 
-                           if (settingsBasename == modifiedBasename)
+                           if (settingsBasename == modifiedBasename || statePath.filename() == modifiedBasename)
                            {
                                this->_DispatchReloadSettings();
                            }
@@ -915,6 +917,7 @@ namespace winrt::TerminalApp::implementation
     // - Reloads the settings from the profile.json.
     void AppLogic::_ReloadSettings()
     {
+        ApplicationState::GetForCurrentApp().Reload(); // Enqueue state reload (by dumping current state)
         // Attempt to load our settings.
         // If it fails,
         //  - don't change the settings (and don't actually apply the new settings)
