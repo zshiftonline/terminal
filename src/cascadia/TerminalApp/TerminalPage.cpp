@@ -509,11 +509,18 @@ namespace winrt::TerminalApp::implementation
     //   when this is called, nothing happens. See _ShowDialog for details
     winrt::Windows::Foundation::IAsyncOperation<ContentDialogResult> TerminalPage::_ShowMultiLinePasteWarningDialog()
     {
-        if (auto presenter{ _dialogPresenter.get() })
-        {
-            co_return co_await presenter.ShowDialog(FindName(L"MultiLinePasteDialog").try_as<WUX::Controls::ContentDialog>());
-        }
-        co_return ContentDialogResult::None;
+        FindName(L"MultiLinePasteDialog"); // Load the dialog so we can use its controls later.
+        return _DisplayGatedDialog(
+            _dialogPresenter.get(),
+            MultiLinePasteDialog(),
+            MultiLinePasteDialogRememberCheckbox(),
+            !_settings.GlobalSettings().HasWarnAboutMultiLinePaste(),
+            ApplicationState::GetForCurrentApp().MultiLinePasteWarningDismissed(),
+            []() {
+                auto state = ApplicationState::GetForCurrentApp();
+                state.MultiLinePasteWarningDismissed(true);
+                state.Commit();
+            });
     }
 
     // Method Description:
@@ -524,11 +531,18 @@ namespace winrt::TerminalApp::implementation
     //   when this is called, nothing happens. See _ShowDialog for details
     winrt::Windows::Foundation::IAsyncOperation<ContentDialogResult> TerminalPage::_ShowLargePasteWarningDialog()
     {
-        if (auto presenter{ _dialogPresenter.get() })
-        {
-            co_return co_await presenter.ShowDialog(FindName(L"LargePasteDialog").try_as<WUX::Controls::ContentDialog>());
-        }
-        co_return ContentDialogResult::None;
+        FindName(L"LargePasteDialog"); // Load the dialog so we can use its controls later.
+        return _DisplayGatedDialog(
+            _dialogPresenter.get(),
+            LargePasteDialog(),
+            LargePasteDialogRememberCheckbox(),
+            !_settings.GlobalSettings().HasWarnAboutLargePaste(),
+            ApplicationState::GetForCurrentApp().LargePasteWarningDismissed(),
+            []() {
+                auto state = ApplicationState::GetForCurrentApp();
+                state.LargePasteWarningDismissed(true);
+                state.Commit();
+            });
     }
 
     // Method Description:
@@ -2011,11 +2025,16 @@ namespace winrt::TerminalApp::implementation
 
             const auto isNewLineLambda = [](auto c) { return c == L'\n' || c == L'\r'; };
             const auto hasNewLine = std::find_if(text.cbegin(), text.cend(), isNewLineLambda) != text.cend();
-            const auto warnMultiLine = hasNewLine && _settings.GlobalSettings().WarnAboutMultiLinePaste();
+            const auto warnMultiLine = hasNewLine && // there was a newline
+                                       _settings.GlobalSettings().WarnAboutMultiLinePaste() && // the warning is enabled (implicitly or explicitly)
+                                       (_settings.GlobalSettings().HasWarnAboutMultiLinePaste() || // the user explicitly cared to set this dialog
+                                        !ApplicationState::GetForCurrentApp().MultiLinePasteWarningDismissed()); // or it was not dismissed previously
 
             constexpr const std::size_t minimumSizeForWarning = 1024 * 5; // 5 KiB
             const bool warnLargeText = text.size() > minimumSizeForWarning &&
-                                       _settings.GlobalSettings().WarnAboutLargePaste();
+                                       _settings.GlobalSettings().WarnAboutLargePaste() &&
+                                       (_settings.GlobalSettings().HasWarnAboutLargePaste() ||
+                                       !ApplicationState::GetForCurrentApp().LargePasteWarningDismissed());
 
             if (warnMultiLine || warnLargeText)
             {

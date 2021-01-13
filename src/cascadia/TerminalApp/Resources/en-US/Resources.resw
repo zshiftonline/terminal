@@ -403,7 +403,7 @@
   <data name="LargePasteDialog.CloseButtonText" xml:space="preserve">
     <value>Cancel</value>
   </data>
-  <data name="LargePasteDialog.Content" xml:space="preserve">
+  <data name="LargePasteDialogWarningText.Text" xml:space="preserve">
     <value>You are about to paste text that is longer than 5 KiB. Do you wish to continue?</value>
   </data>
   <data name="LargePasteDialog.PrimaryButtonText" xml:space="preserve">

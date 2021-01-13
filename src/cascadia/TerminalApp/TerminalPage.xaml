@@ -80,6 +80,7 @@ the MIT License. See LICENSE in the project root for license information. -->
                         FontFamily="Cascadia Mono">
                     </TextBlock>
                 </ScrollViewer>
+                <CheckBox x:Uid="DoNotAskAgainCheckbox" x:Name="MultiLinePasteDialogRememberCheckbox" />
             </StackPanel>
         </ContentDialog>
 
@@ -88,6 +89,13 @@ the MIT License. See LICENSE in the project root for license information. -->
             x:Name="LargePasteDialog"
             x:Uid="LargePasteDialog"
             DefaultButton="Primary">
+            <StackPanel Orientation="Vertical">
+                <TextBlock
+                    x:Uid="LargePasteDialogWarningText"
+                    TextWrapping="Wrap">
+                </TextBlock>
+                <CheckBox x:Uid="DoNotAskAgainCheckbox" x:Name="LargePasteDialogRememberCheckbox" />
+            </StackPanel>
         </ContentDialog>
 
         <ContentDialog
