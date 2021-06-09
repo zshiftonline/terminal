@@ -32,6 +32,8 @@ jobs:
     dependsOn: Build${{ parameters.platform }}${{ parameters.configuration }}
     condition: and(succeeded(), eq('${{ parameters.platform }}', 'x64')) 
     testSuite: 'DevTestSuite'
+    platform: ${{ parameters.platform }}
+    configuration: ${{ parameters.configuration }}
     rerunPassesRequiredToAvoidFailure: ${{ parameters.rerunPassesRequiredToAvoidFailure }}
     
 - template: helix-processtestresults-job.yml
