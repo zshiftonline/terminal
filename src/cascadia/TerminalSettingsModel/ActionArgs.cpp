@@ -33,6 +33,7 @@
 #include "RenameWindowArgs.g.cpp"
 #include "GlobalSummonArgs.g.cpp"
 #include "FocusPaneArgs.g.cpp"
+#include "UpdateSelectionArgs.g.cpp"
 
 #include <LibraryResources.h>
 
@@ -661,5 +662,10 @@ namespace winrt::Microsoft::Terminal::Settings::Model::implementation
             fmt::format(std::wstring_view(RS_(L"FocusPaneCommandKey")),
                         Id())
         };
+    }
+
+    winrt::hstring UpdateSelectionArgs::GenerateName() const
+    {
+        return L"";
     }
 }
