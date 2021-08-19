@@ -1273,7 +1273,7 @@ IFACEMETHODIMP UiaTextRangeBase::GetChildren(_Outptr_result_maybenull_ SAFEARRAY
 
 #pragma endregion
 
-const COORD UiaTextRangeBase::_getScreenFontSize() const
+const COORD UiaTextRangeBase::_getScreenFontSize() const noexcept
 {
     COORD coordRet = _pData->GetFontInfo().GetSize();
 

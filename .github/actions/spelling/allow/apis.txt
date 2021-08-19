@@ -9,6 +9,7 @@ BUILDBRANCH
 BUILDMSG
 BUILDNUMBER
 BYPOSITION
+calloc
 charconv
 CLASSNOTAVAILABLE
 cmdletbinding
@@ -25,6 +26,8 @@ DERR
 dlldata
 DONTADDTORECENT
 DWORDLONG
+dxgidebug
+dxguid
 environstrings
 EXPCMDFLAGS
 EXPCMDSTATE
@@ -80,12 +83,12 @@ llu
 localtime
 lround
 LSHIFT
+memicmp
 MENUCOMMAND
 MENUDATA
 MENUINFO
-memicmp
-mptt
 mov
+mptt
 msappx
 MULTIPLEUSE
 NCHITTEST
