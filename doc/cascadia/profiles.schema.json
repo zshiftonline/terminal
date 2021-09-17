@@ -1420,23 +1420,23 @@
           "$ref": "#/definitions/Color",
           "default": "#0c0c0c",
           "description": "Sets the background color of the text. Overrides \"background\" from the color scheme. Uses hex color format: \"#rrggbb\".",
-          "type": ["string", "null"]
+          "type": [ "string", "null" ]
         },
         "unfocusedAppearance": {
           "$ref": "#/definitions/AppearanceConfig",
           "description": "Sets the appearance of the terminal when it is unfocused.",
-          "type": ["object", "null"]
+          "type": [ "object", "null" ]
         },
         "font": {
           "$ref": "#/definitions/FontConfig",
           "description": "Sets the font options of the terminal.",
-          "type": ["object", "null"]
+          "type": [ "object", "null" ]
         },
         "backgroundImage": {
           "description": "Sets the file location of the image to draw over the window background.",
           "oneOf": [
             {
-              "type": ["string", null]
+              "type": [ "string", null ]
             },
             {
               "enum": [
@@ -1514,7 +1514,7 @@
         "cursorColor": {
           "oneOf": [
             { "$ref": "#/definitions/Color" },
-            {"type": "null"}
+            { "type": "null" }
           ],
           "description": "Sets the color of the cursor. Overrides the cursor color from the color scheme. Uses hex color format: \"#rrggbb\"."
         },
@@ -1522,7 +1522,7 @@
           "description": "Sets the percentage height of the cursor starting from the bottom. Only works when cursorShape is set to \"vintage\". Accepts values from 1-100.",
           "maximum": 100,
           "minimum": 1,
-          "type": ["integer","null"],
+          "type": [ "integer", "null" ],
           "default": 25
         },
         "cursorShape": {
@@ -1537,6 +1537,10 @@
             "vintage"
           ],
           "type": "string"
+        },
+        "experimental.connection.passthroughMode": {
+          "description": "When set to true, directs the PTY for this connection to use pass-through mode instead of the original Conhost PTY simulation engine. This is an experimental feature, and its continued existance is not guaranteed.",
+          "type": "boolean"
         },
         "experimental.retroTerminalEffect": {
           "description": "When set to true, enable retro terminal effects. This is an experimental feature, and its continued existence is not guaranteed.",
@@ -1591,7 +1595,7 @@
           "$ref": "#/definitions/Color",
           "default": "#cccccc",
           "description": "Sets the text color. Overrides \"foreground\" from the color scheme. Uses hex color format: \"#rrggbb\".",
-          "type": ["string", "null"]
+          "type": [ "string", "null" ]
         },
         "guid": {
           "$ref": "#/definitions/ProfileGuid",
@@ -1608,7 +1612,7 @@
           "minimum": -1,
           "type": "integer"
         },
-        "icon":{ "$ref": "#/definitions/Icon" },
+        "icon": { "$ref": "#/definitions/Icon" },
         "name": {
           "description": "Name of the profile. Displays in the dropdown menu.",
           "minLength": 1,
@@ -1638,7 +1642,7 @@
         },
         "selectionBackground": {
           "oneOf": [
-            {"$ref": "#/definitions/Color"},
+            { "$ref": "#/definitions/Color" },
             { "type": "null" }
           ],
           "description": "Sets the background color of selected text. Overrides selectionBackground set in the color scheme. Uses hex color format: \"#rrggbb\"."
@@ -1655,7 +1659,7 @@
         },
         "source": {
           "description": "Stores the name of the profile generator that originated this profile.",
-          "type": ["string", "null"]
+          "type": [ "string", "null" ]
         },
         "startingDirectory": {
           "description": "The directory the shell starts in when it is loaded.",
@@ -1669,11 +1673,11 @@
         "tabColor": {
           "$ref": "#/definitions/Color",
           "description": "Sets the color of the profile's tab. Using the tab color picker will override this color.",
-          "type": ["string", "null"]
+          "type": [ "string", "null" ]
         },
         "tabTitle": {
           "description": "If set, will replace the name as the title to pass to the shell on startup. Some shells (like bash) may choose to ignore this initial value, while others (cmd, powershell) may use this value over the lifetime of the application.",
-          "type": ["string", "null"]
+          "type": [ "string", "null" ]
         },
         "useAcrylic": {
           "default": false,
