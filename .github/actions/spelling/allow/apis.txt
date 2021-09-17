@@ -84,6 +84,7 @@ LSHIFT
 MENUCOMMAND
 MENUDATA
 MENUINFO
+memchr
 memicmp
 mptt
 mov
